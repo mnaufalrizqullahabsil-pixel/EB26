@@ -1,30 +1,29 @@
 import { createClient } from '@supabase/supabase-js';
 
-const DEFAULT_SUPABASE_URL = 'https://dlzfugiolifzdxqnnatp.supabase.co';
-const DEFAULT_SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRsemZ1Z2lvbGlmemR4cW5uYXRwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE4MTgzMzksImV4cCI6MjEwNzM5NDMzOX0.MlSV8ujsyWCM1cngOVVhNVoeAs9KvG-Rf5V66RAwxN0';
+const OFFICIAL_SUPABASE_URL = 'https://dlzfugiolifzdxqnnatp.supabase.co';
+const OFFICIAL_SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRsemZ1Z2lvbGlmemR4cW5uYXRwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE4MTgzMzksImV4cCI6MjEwNzM5NDMzOX0.MlSV8ujsyWCM1cngOVVhNVoeAs9KvG-Rf5V66RAwxN0';
 
-const supabaseUrl = 
-  import.meta.env.PUBLIC_SUPABASE_URL || 
-  import.meta.env.SUPABASE_URL || 
-  import.meta.env.NEXT_PUBLIC_SUPABASE_URL || 
-  DEFAULT_SUPABASE_URL;
+function getValidConfig(val: unknown, placeholder: string, fallback: string): string {
+  if (typeof val === 'string' && val.trim() !== '' && !val.includes(placeholder)) {
+    return val.trim();
+  }
+  return fallback;
+}
 
-const supabaseAnonKey = 
-  import.meta.env.PUBLIC_SUPABASE_ANON_KEY || 
-  import.meta.env.SUPABASE_ANON_KEY || 
-  import.meta.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 
-  DEFAULT_SUPABASE_ANON_KEY;
-
-export const isSupabaseConfigured = Boolean(
-  supabaseUrl && 
-  supabaseAnonKey && 
-  !supabaseUrl.includes('your-project-id') && 
-  !supabaseAnonKey.includes('your-anon-key')
+const supabaseUrl = getValidConfig(
+  import.meta.env.PUBLIC_SUPABASE_URL || import.meta.env.SUPABASE_URL || import.meta.env.NEXT_PUBLIC_SUPABASE_URL,
+  'your-project-id',
+  OFFICIAL_SUPABASE_URL
 );
 
-export const supabase = isSupabaseConfigured
-  ? createClient(supabaseUrl, supabaseAnonKey)
-  : null;
+const supabaseAnonKey = getValidConfig(
+  import.meta.env.PUBLIC_SUPABASE_ANON_KEY || import.meta.env.SUPABASE_ANON_KEY || import.meta.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+  'your-anon-key',
+  OFFICIAL_SUPABASE_ANON_KEY
+);
+
+export const isSupabaseConfigured = true;
+export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 export interface PesertaResult {
   nim: string;
@@ -48,11 +47,6 @@ export async function checkNIM(inputNim: string): Promise<{ data: PesertaResult 
   // Enforce panjang dan format angka murni
   if (cleanNim.length < 5 || cleanNim.length > 15 || !/^[0-9a-zA-Z]+$/.test(cleanNim)) {
     return { data: null, error: 'Format NIM tidak valid. Pastikan hanya memasukkan karakter angka/alfanumerik.' };
-  }
-
-  if (!isSupabaseConfigured || !supabase) {
-    console.warn('Supabase belum dikonfigurasi di file .env.');
-    return { data: null, error: null };
   }
 
   try {
