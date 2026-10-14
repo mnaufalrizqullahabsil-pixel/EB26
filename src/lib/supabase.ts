@@ -1,17 +1,19 @@
 import { createClient } from '@supabase/supabase-js';
 
+const DEFAULT_SUPABASE_URL = 'https://dlzfugiolifzdxqnnatp.supabase.co';
+const DEFAULT_SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRsemZ1Z2lvbGlmemR4cW5uYXRwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE4MTgzMzksImV4cCI6MjEwNzM5NDMzOX0.MlSV8ujsyWCM1cngOVVhNVoeAs9KvG-Rf5V66RAwxN0';
+
 const supabaseUrl = 
   import.meta.env.PUBLIC_SUPABASE_URL || 
   import.meta.env.SUPABASE_URL || 
   import.meta.env.NEXT_PUBLIC_SUPABASE_URL || 
-  '';
+  DEFAULT_SUPABASE_URL;
 
 const supabaseAnonKey = 
   import.meta.env.PUBLIC_SUPABASE_ANON_KEY || 
   import.meta.env.SUPABASE_ANON_KEY || 
   import.meta.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 
-  '';
-
+  DEFAULT_SUPABASE_ANON_KEY;
 
 export const isSupabaseConfigured = Boolean(
   supabaseUrl && 
