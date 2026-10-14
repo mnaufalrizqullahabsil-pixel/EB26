@@ -1,0 +1,319 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Navbar from '../components/Navbar.astro';
+import SearchSection from '../components/SearchSection.astro';
+import SplashScreen from '../components/SplashScreen.astro';
+import ResultCard from '../components/ResultCard.astro';
+import Footer from '../components/Footer.astro';
+---
+
+<Layout title="Pengumuman Seleksi Panitia - Ekspedisi Biru 2026">
+  <!-- Navbar -->
+  <Navbar />
+
+  <!-- Main Content Container -->
+  <main class="flex-1 max-w-4xl w-full mx-auto px-3.5 sm:px-4 py-6 sm:py-8 md:py-12 flex flex-col items-center">
+    <!-- Search Form Section -->
+    <SearchSection />
+
+    <!-- Result Card Section (Revealed after search) -->
+    <ResultCard />
+  </main>
+
+  <!-- Reveal / Splash Screen Modal Overlay -->
+  <SplashScreen />
+
+  <!-- Footer -->
+  <Footer />
+</Layout>
+
+<script>
+  import confetti from 'canvas-confetti';
+  import { checkNIM } from '../lib/supabase';
+
+  // DOM Elements
+  const searchSection = document.getElementById('searchSection');
+  const nimInput = document.getElementById('nimInput') as HTMLInputElement | null;
+  const btnCheckNIM = document.getElementById('btnCheckNIM') as HTMLButtonElement | null;
+  const inputErrorMsg = document.getElementById('inputErrorMsg');
+  const errorText = document.getElementById('errorText');
+
+  // Splash Screen Elements
+  const splashScreenOverlay = document.getElementById('splashScreenOverlay');
+  const splashNimTarget = document.getElementById('splashNimTarget');
+  const splashStatusText = document.getElementById('splashStatusText');
+  const splashProgressBar = document.getElementById('splashProgressBar');
+
+  // Result Elements
+  const resultSection = document.getElementById('resultSection');
+  const cardDiterima = document.getElementById('cardDiterima');
+  const cardNotFound = document.getElementById('cardNotFound');
+  const btnResetSearch = document.getElementById('btnResetSearch');
+
+  // Result Data Fields
+  const resLolosNama = document.getElementById('resLolosNama');
+  const resLolosNim = document.getElementById('resLolosNim');
+  const resLolosDivisi = document.getElementById('resLolosDivisi');
+  const resLolosWaBtn = document.getElementById('resLolosWaBtn') as HTMLAnchorElement | null;
+  const resNotFoundNim = document.getElementById('resNotFoundNim');
+
+  // Anti-Spam / Rate Limiting Cooldown State
+  let isSearching = false;
+  let lastSearchTimestamp = 0;
+  const COOLDOWN_MS = 2500; // 2.5 detik jeda per pencarian
+  const NIM_REGEX = /^[0-9a-zA-Z]{5,15}$/;
+
+  function showError(message: string) {
+    if (inputErrorMsg && errorText) {
+      errorText.textContent = message;
+      inputErrorMsg.classList.remove('hidden');
+    }
+    nimInput?.focus();
+  }
+
+  function hideError() {
+    if (inputErrorMsg) {
+      inputErrorMsg.classList.add('hidden');
+    }
+  }
+
+  /**
+   * Sanitasi URL WhatsApp untuk mencegah DOM-based XSS (javascript:...) dan Phishing
+   * Hanya mengizinkan protokol https: dan domain resmi WhatsApp
+   */
+  function sanitizeWhatsAppUrl(rawUrl: string | null | undefined): string | null {
+    if (!rawUrl) return null;
+    try {
+      const parsed = new URL(rawUrl.trim());
+      if (parsed.protocol !== 'https:') return null;
+      const host = parsed.hostname.toLowerCase();
+      const allowedHosts = ['chat.whatsapp.com', 'wa.me', 'api.whatsapp.com'];
+      if (allowedHosts.includes(host)) {
+        return parsed.href;
+      }
+      return null;
+    } catch {
+      return null;
+    }
+  }
+
+  function fireConfetti() {
+    // Stage 1: Big Center Cannon
+    confetti({
+      particleCount: 80,
+      spread: 70,
+      origin: { y: 0.6 },
+      colors: ['#FFE359', '#1D4E9E', '#C89151', '#F16527', '#6AA03A']
+    });
+
+    // Stage 2: Left & Right celebration canons
+    setTimeout(() => {
+      confetti({
+        particleCount: 50,
+        angle: 60,
+        spread: 55,
+        origin: { x: 0.1, y: 0.7 },
+        colors: ['#FFE359', '#1D4E9E', '#6AA03A']
+      });
+      confetti({
+        particleCount: 50,
+        angle: 120,
+        spread: 55,
+        origin: { x: 0.9, y: 0.7 },
+        colors: ['#FFE359', '#F16527', '#1D4E9E']
+      });
+    }, 280);
+  }
+
+  async function handleSearch() {
+    hideError();
+
+    // 1. Anti-Spam Cooldown Guard
+    const now = Date.now();
+    if (isSearching) return;
+    if (now - lastSearchTimestamp < COOLDOWN_MS) {
+      const waitSec = Math.ceil((COOLDOWN_MS - (now - lastSearchTimestamp)) / 1000);
+      showError(`Mohon tunggu ${waitSec} detik sebelum memeriksa kembali.`);
+      return;
+    }
+
+    const nimVal = nimInput?.value.trim() || '';
+
+    // 2. Validasi Format NIM Ketat
+    if (!nimVal) {
+      showError('Silakan masukkan Nomor Induk Mahasiswa (NIM) Anda.');
+      return;
+    }
+
+    if (!NIM_REGEX.test(nimVal)) {
+      showError('Format NIM tidak valid. Pastikan berisi 5-15 karakter alfanumerik tanpa spasi atau simbol.');
+      return;
+    }
+
+    // Set lock state & disable button
+    isSearching = true;
+    lastSearchTimestamp = Date.now();
+    if (btnCheckNIM) {
+      btnCheckNIM.disabled = true;
+      btnCheckNIM.classList.add('opacity-75', 'cursor-not-allowed');
+    }
+
+    try {
+      // Hide previous results
+      if (resultSection) {
+        resultSection.classList.add('hidden', 'opacity-0');
+        resultSection.classList.remove('opacity-100');
+      }
+
+      // Prepare & Open Splash Screen Reveal
+      if (splashNimTarget) splashNimTarget.textContent = nimVal;
+      if (splashStatusText) splashStatusText.textContent = 'Menghubungkan ke basis data seleksi...';
+      if (splashProgressBar) splashProgressBar.style.width = '15%';
+
+      if (splashScreenOverlay) {
+        splashScreenOverlay.classList.remove('hidden');
+        requestAnimationFrame(() => {
+          splashScreenOverlay.classList.add('flex', 'opacity-100');
+          splashScreenOverlay.classList.remove('opacity-0');
+        });
+      }
+
+      // Haptic vibration feedback if supported
+      if (navigator.vibrate) {
+        navigator.vibrate([40, 60, 40]);
+      }
+
+      // Concurrently fetch data and animate suspense steps
+      const dataPromise = checkNIM(nimVal);
+
+      // Timeline step 1 -> step 2
+      await new Promise((r) => setTimeout(r, 600));
+      if (splashStatusText) splashStatusText.textContent = 'Memverifikasi berkas wawancara...';
+      if (splashProgressBar) splashProgressBar.style.width = '55%';
+
+      // Timeline step 2 -> step 3
+      await new Promise((r) => setTimeout(r, 650));
+      if (splashStatusText) splashStatusText.textContent = 'Membuka Surat Keputusan Seleksi...';
+      if (splashProgressBar) splashProgressBar.style.width = '90%';
+
+      // Wait for data response + final climax
+      const [fetchResult] = await Promise.all([
+        dataPromise,
+        new Promise((r) => setTimeout(r, 550))
+      ]);
+
+      if (splashProgressBar) splashProgressBar.style.width = '100%';
+      await new Promise((r) => setTimeout(r, 250));
+
+      // Close Splash Screen
+      if (splashScreenOverlay) {
+        splashScreenOverlay.classList.add('opacity-0');
+        splashScreenOverlay.classList.remove('opacity-100');
+        setTimeout(() => {
+          splashScreenOverlay.classList.add('hidden');
+          splashScreenOverlay.classList.remove('flex');
+        }, 300);
+      }
+
+      // Bila terjadi error koneksi sistem
+      if (fetchResult.error) {
+        showError(fetchResult.error);
+        return;
+      }
+
+      // Display Result
+      displayResult(fetchResult.data, nimVal);
+    } catch (err) {
+      console.error('Error saat memproses pencarian:', err);
+      showError('Terjadi kendala pada sistem. Silakan muat ulang halaman.');
+    } finally {
+      isSearching = false;
+      if (btnCheckNIM) {
+        btnCheckNIM.disabled = false;
+        btnCheckNIM.classList.remove('opacity-75', 'cursor-not-allowed');
+      }
+    }
+  }
+
+  function displayResult(data: any, searchedNim: string) {
+    if (!resultSection) return;
+
+    // Reset card visibilities
+    cardDiterima?.classList.add('hidden');
+    cardNotFound?.classList.add('hidden');
+
+    if (data && (data.status === 'diterima' || data.status === 'lolos' || data.nama)) {
+      if (resLolosNama) resLolosNama.textContent = data.nama;
+      if (resLolosNim) resLolosNim.textContent = data.nim;
+      if (resLolosDivisi) resLolosDivisi.textContent = data.divisi || 'Panitia Ekspedisi Biru 2026';
+      
+      // Sanitasi link WhatsApp
+      if (resLolosWaBtn) {
+        const safeWaUrl = sanitizeWhatsAppUrl(data.link_wa);
+        if (safeWaUrl) {
+          resLolosWaBtn.href = safeWaUrl;
+          resLolosWaBtn.classList.remove('pointer-events-none', 'opacity-50');
+        } else {
+          resLolosWaBtn.href = '#';
+          resLolosWaBtn.classList.add('pointer-events-none', 'opacity-50');
+        }
+      }
+
+      cardDiterima?.classList.remove('hidden');
+      fireConfetti();
+    } else {
+      if (resNotFoundNim) resNotFoundNim.textContent = searchedNim;
+      cardNotFound?.classList.remove('hidden');
+    }
+
+    // Sembunyikan formulir input NIM agar tampilan fokus ke hasil
+    searchSection?.classList.add('hidden');
+
+    // Reveal Result Section with smooth entry
+    resultSection.classList.remove('hidden');
+    requestAnimationFrame(() => {
+      resultSection.classList.add('opacity-100', 'translate-y-0');
+      resultSection.classList.remove('opacity-0', 'translate-y-4');
+      
+      // Scroll to top / result
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  }
+
+  function handleReset() {
+    if (resultSection) {
+      resultSection.classList.add('opacity-0', 'translate-y-4');
+      resultSection.classList.remove('opacity-100', 'translate-y-0');
+      resultSection.classList.add('hidden');
+    }
+
+    // Tampilkan kembali formulir input NIM
+    if (searchSection) {
+      searchSection.classList.remove('hidden');
+    }
+
+    if (nimInput) {
+      nimInput.value = '';
+      setTimeout(() => nimInput.focus(), 60);
+    }
+
+    hideError();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  // Event Listeners
+  btnCheckNIM?.addEventListener('click', handleSearch);
+
+  nimInput?.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      handleSearch();
+    }
+  });
+
+  nimInput?.addEventListener('input', () => {
+    hideError();
+  });
+
+  btnResetSearch?.addEventListener('click', handleReset);
+</script>

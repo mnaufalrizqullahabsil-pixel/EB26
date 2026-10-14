@@ -1,0 +1,64 @@
+---
+// SplashScreen.astro - The Suspense Reveal Overlay (Mobile-optimized)
+---
+
+<div
+  id="splashScreenOverlay"
+  class="fixed inset-0 z-50 hidden opacity-0 transition-opacity duration-300 items-center justify-center p-4 bg-brand-navy/90 backdrop-blur-md"
+>
+  <div class="relative w-full max-w-sm sm:max-w-md bg-[#0D1B30] border-2 border-brand-yellow/30 rounded-2xl sm:rounded-3xl p-6 sm:p-8 text-center shadow-2xl overflow-hidden">
+    
+    <!-- Decorative background glow -->
+    <div class="absolute -top-24 -left-24 w-44 h-44 bg-brand-blue/30 rounded-full blur-3xl pointer-events-none"></div>
+    <div class="absolute -bottom-24 -right-24 w-44 h-44 bg-brand-yellow/20 rounded-full blur-3xl pointer-events-none"></div>
+
+    <!-- Scanning radar line animation -->
+    <div class="absolute inset-0 bg-gradient-to-b from-transparent via-brand-yellow/5 to-transparent pointer-events-none animate-pulse"></div>
+
+    <!-- Center Expedition Emblem with Rotating Compass Ring -->
+    <div class="relative w-20 h-20 sm:w-24 sm:h-24 mx-auto mb-4 sm:mb-6 flex items-center justify-center">
+      <!-- Outer Rotating Dashed Ring -->
+      <div class="absolute inset-0 rounded-full border-2 border-dashed border-brand-yellow/60 animate-[spin_6s_linear_infinite]"></div>
+      
+      <!-- Middle Pulsing Ring -->
+      <div class="absolute inset-2 rounded-full border border-brand-orange/40 animate-ping opacity-30"></div>
+      
+      <!-- Inner Emblem Circle -->
+      <div class="relative w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-gradient-to-tr from-brand-blue to-brand-blueDark border-2 border-brand-yellow text-white flex flex-col items-center justify-center shadow-lg shadow-brand-blue/40">
+        <span class="text-[11px] sm:text-xs font-black tracking-wider text-brand-yellow leading-tight">EB</span>
+        <span class="text-[8px] sm:text-[9px] font-bold text-white tracking-widest leading-none">2026</span>
+      </div>
+    </div>
+
+    <!-- Title & Target NIM -->
+    <span class="inline-block text-[10px] sm:text-[11px] font-extrabold uppercase tracking-widest text-brand-yellow mb-1">
+      Proses Verifikasi Berkas
+    </span>
+    <h3 class="text-lg sm:text-xl md:text-2xl font-black text-white tracking-tight">
+      Membuka Keputusan Seleksi
+    </h3>
+    <div class="mt-2 inline-flex items-center gap-1.5 px-3 py-1 bg-white/10 rounded-full border border-white/10 text-xs font-mono font-bold text-brand-yellow">
+      <span class="text-gray-400">NIM:</span>
+      <span id="splashNimTarget">2304192</span>
+    </div>
+
+    <!-- Animated Status Steps -->
+    <div class="my-5 sm:my-6 min-h-[40px] flex items-center justify-center">
+      <p id="splashStatusText" class="text-xs sm:text-sm font-semibold text-gray-200 transition-all duration-200">
+        Menghubungkan ke basis data seleksi...
+      </p>
+    </div>
+
+    <!-- Progress Bar -->
+    <div class="w-full bg-white/10 rounded-full h-2.5 overflow-hidden p-0.5 border border-white/10">
+      <div
+        id="splashProgressBar"
+        class="h-full bg-gradient-to-r from-brand-yellow via-brand-orange to-brand-blue rounded-full transition-all duration-300 ease-out w-0"
+      ></div>
+    </div>
+
+    <p class="text-[10px] sm:text-[11px] text-gray-400 mt-4 tracking-wide font-medium">
+      Panitia Ekspedisi Biru 2026 • Kampus UPI Cibiru
+    </p>
+  </div>
+</div>

@@ -1,0 +1,170 @@
+---
+// ResultCard.astro - Hanya menampilkan state: "DITERIMA" atau "DATA TIDAK DITEMUKAN" (Mobile-optimized)
+---
+
+<div id="resultSection" class="w-full max-w-xl mx-auto space-y-4 hidden opacity-0 transition-all duration-500 transform translate-y-4 px-1 sm:px-0">
+  
+  <!-- Status Subheader Bar -->
+  <div class="flex items-center justify-between px-3.5 py-2 bg-white/85 backdrop-blur-md rounded-xl border border-brand-tan/20 shadow-xs text-xs">
+    <span class="font-bold text-gray-600 uppercase tracking-wider text-[11px] sm:text-xs">Hasil Verifikasi</span>
+    <span id="resultBadgeStatus" class="font-extrabold text-brand-orange bg-brand-orange/10 px-2 sm:px-2.5 py-0.5 rounded-md border border-brand-orange/30 text-[10px] sm:text-xs">
+      Terverifikasi Sistem
+    </span>
+  </div>
+
+  <!-- ================= 1. KARTU DITERIMA (ACCEPTED) ================= -->
+  <div id="cardDiterima" class="hidden bg-white rounded-2xl border-2 border-brand-blue shadow-2xl shadow-brand-blue/15 overflow-hidden">
+    <!-- Header: Status Diterima -->
+    <div class="bg-gradient-to-r from-brand-blue via-brand-blueDark to-[#0F2B5C] p-4 sm:p-5 md:p-6 text-white flex items-center justify-between gap-3 relative overflow-hidden">
+      <!-- Background subtle glow -->
+      <div class="absolute -right-6 -bottom-6 w-32 h-32 bg-white/5 rounded-full pointer-events-none"></div>
+      
+      <div class="relative z-10 min-w-0">
+        <span class="text-[10px] sm:text-[11px] font-extrabold text-brand-yellow uppercase tracking-widest block mb-0.5 sm:mb-1">
+          Keputusan Seleksi Wawancara
+        </span>
+        <h3 class="text-lg sm:text-xl md:text-2xl font-black tracking-wide text-white drop-shadow-sm leading-tight">
+          SELAMAT, ANDA DITERIMA!
+        </h3>
+        <p class="text-[11px] sm:text-xs text-blue-100 font-medium mt-0.5 line-clamp-1">
+          Panitia Ekspedisi Biru 2026 • Kampus UPI di Cibiru
+        </p>
+      </div>
+
+      <div class="relative z-10 w-11 h-11 sm:w-14 sm:h-14 rounded-xl sm:rounded-2xl bg-white border-2 border-brand-green text-brand-green flex items-center justify-center text-xl sm:text-2xl font-black shadow-md shrink-0">
+        ✓
+      </div>
+    </div>
+
+    <!-- Badan Kartu: Bento Detail -->
+    <div class="p-4 sm:p-6 md:p-7 space-y-4 sm:space-y-5 bg-gradient-to-b from-white to-brand-cream/50">
+      
+      <!-- Baris Identitas (Responsive 1 col on mobile, 2 cols on tablet+) -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 pb-3.5 sm:pb-4 border-b border-brand-tan/20">
+        <div>
+          <span class="text-[10px] sm:text-[11px] font-bold text-gray-400 uppercase tracking-wider block mb-0.5">Nama Lengkap</span>
+          <p id="resLolosNama" class="text-base sm:text-lg font-extrabold text-brand-navy leading-snug break-words">-</p>
+        </div>
+        <div>
+          <span class="text-[10px] sm:text-[11px] font-bold text-gray-400 uppercase tracking-wider block mb-0.5">NIM Mahasiswa</span>
+          <p id="resLolosNim" class="text-base sm:text-lg font-extrabold text-brand-navy font-mono leading-snug">-</p>
+        </div>
+      </div>
+
+      <!-- Highlight Penempatan Divisi -->
+      <div class="bg-brand-cream border-2 border-brand-tan/40 rounded-xl p-3.5 sm:p-4 shadow-xs relative overflow-hidden">
+        <div class="absolute top-0 right-0 w-16 h-16 bg-brand-yellow/20 rounded-bl-full pointer-events-none"></div>
+        <span class="text-[10px] sm:text-[11px] font-extrabold text-brand-tan uppercase tracking-wider block mb-1">
+          Divisi yang Diterima
+        </span>
+        <p id="resLolosDivisi" class="text-lg sm:text-xl md:text-2xl font-black text-brand-blue tracking-tight leading-snug break-words">
+          -
+        </p>
+      </div>
+
+      <!-- Pesan Sambutan Panitia (Template Otomatis) -->
+      <div class="bg-brand-yellow/15 border-l-4 border-brand-orange p-3.5 sm:p-4 rounded-r-xl">
+        <p class="text-xs text-brand-navy leading-relaxed font-medium">
+          <strong class="text-brand-orange font-bold block sm:inline">Catatan Panitia:</strong>
+          Selamat mengemban amanah dalam kepanitiaan Ekspedisi Biru 2026! Persiapkan diri Anda untuk agenda <em>First Gathering</em> dan <em>Staffing</em>.
+        </p>
+      </div>
+
+      <!-- Tombol Aksi WhatsApp & Kontak -->
+      <div class="space-y-3 pt-1">
+        <a
+          id="resLolosWaBtn"
+          href="#"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="w-full bg-brand-green hover:bg-[#5b8c30] text-white font-extrabold py-3 sm:py-3.5 px-4 rounded-xl shadow-md hover:shadow-lg flex items-center justify-center gap-2 text-xs sm:text-sm transition transform hover:-translate-y-0.5 active:translate-y-0"
+        >
+          <svg class="w-4 h-4 sm:w-5 sm:h-5 fill-current shrink-0" viewBox="0 0 24 24">
+            <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.911.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766.001-3.187-2.575-5.77-5.764-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.299.045-.677.063-1.092-.069-.252-.08-.575-.187-.988-.365-1.739-.751-2.874-2.502-2.961-2.617-.087-.116-.708-.94-.708-1.793s.448-1.273.607-1.446c.159-.173.346-.217.462-.217l.332.007c.101.005.244-.038.375.279.144.35.49 1.196.533 1.284.043.088.072.19.014.305-.058.115-.087.188-.173.289l-.26.304c-.087.086-.177.18-.076.354.101.174.449.741.964 1.201.662.591 1.221.774 1.394.86.174.086.275.072.376-.044.101-.116.433-.506.549-.68.116-.173.231-.145.39-.086.159.058 1.01.477 1.184.564.173.086.289.13.332.202.043.072.043.419-.101.824z" />
+          </svg>
+          Gabung Grup WhatsApp Divisi
+        </a>
+
+        <!-- Narahubung (Direct clickable WhatsApp links on mobile) -->
+        <div class="text-center pt-1 text-[11px] sm:text-xs text-gray-500 font-medium">
+          <span class="block mb-1">Narahubung Panitia:</span>
+          <div class="flex items-center justify-center gap-2 flex-wrap font-bold text-brand-navy">
+            <a
+              href="https://wa.me/6282241845112"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="inline-flex items-center gap-1 hover:text-brand-green hover:underline whitespace-nowrap bg-white/70 px-2 py-0.5 rounded border border-gray-200"
+            >
+              +62 822-4184-5112 (Nisa)
+            </a>
+            <span class="text-gray-300 hidden sm:inline">•</span>
+            <a
+              href="https://wa.me/6281326811495"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="inline-flex items-center gap-1 hover:text-brand-green hover:underline whitespace-nowrap bg-white/70 px-2 py-0.5 rounded border border-gray-200"
+            >
+              +62 813-2681-1495 (Divarizqa)
+            </a>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ================= 2. KARTU DATA TIDAK DITEMUKAN (HALUS & RAMAH) ================= -->
+  <div id="cardNotFound" class="hidden bg-white rounded-2xl border-2 border-brand-tan/40 shadow-xl overflow-hidden">
+    <!-- Header Halus -->
+    <div class="bg-gradient-to-r from-brand-navy to-[#1a2f4c] p-4 sm:p-5 text-white flex items-center justify-between">
+      <div>
+        <span class="text-[10px] sm:text-[11px] font-extrabold text-brand-yellow uppercase tracking-widest block mb-0.5">
+          Informasi Pencarian
+        </span>
+        <h3 class="text-base sm:text-lg font-black tracking-wide text-white">
+          Data Belum Ditemukan
+        </h3>
+      </div>
+      <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-white/10 border border-brand-yellow/30 text-brand-yellow flex items-center justify-center text-base sm:text-lg font-bold shrink-0">
+        ℹ
+      </div>
+    </div>
+
+    <!-- Badan Kartu: Pesan Halus -->
+    <div class="p-5 sm:p-6 md:p-7 space-y-4 text-center">
+      <div class="max-w-md mx-auto space-y-2">
+        <p class="text-xs sm:text-sm text-brand-navy font-semibold leading-relaxed">
+          Nomor Induk Mahasiswa (NIM) <span id="resNotFoundNim" class="font-mono font-black text-brand-blue bg-brand-cream px-2 py-0.5 rounded border border-brand-tan/30 break-all"></span> belum tercantum dalam basis data kepanitiaan terpilih Ekspedisi Biru 2026.
+        </p>
+        <p class="text-[11px] sm:text-xs text-gray-500 leading-relaxed">
+          Mohon pastikan 7 digit NIM yang Anda masukkan sudah sesuai. Apabila Anda telah mengikuti wawancara dan memerlukan informasi lebih lanjut, silakan hubungi kontak panitia di bawah ini.
+        </p>
+      </div>
+
+      <div class="bg-brand-cream/70 border border-brand-tan/30 rounded-xl p-3 sm:p-3.5 text-xs text-brand-navy">
+        <span class="font-bold block text-[10px] sm:text-[11px] uppercase tracking-wider text-brand-tan mb-1.5">Narahubung Panitia:</span>
+        <div class="flex items-center justify-center gap-2 flex-wrap font-semibold text-gray-700 text-[11px] sm:text-xs">
+          <a href="https://wa.me/6282241845112" target="_blank" class="hover:text-brand-green hover:underline whitespace-nowrap">
+            +62 822-4184-5112 (Nisa)
+          </a>
+          <span class="text-gray-300 hidden sm:inline">•</span>
+          <a href="https://wa.me/6281326811495" target="_blank" class="hover:text-brand-green hover:underline whitespace-nowrap">
+            +62 813-2681-1495 (Divarizqa)
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tombol Reset / Periksa NIM Lain -->
+  <div class="pt-2 text-center">
+    <button
+      type="button"
+      id="btnResetSearch"
+      class="cursor-pointer inline-flex items-center gap-2 px-5 py-2.5 rounded-xl border-2 border-brand-navy bg-white hover:bg-brand-cream text-brand-navy font-bold text-xs uppercase tracking-wider shadow-[3px_3px_0px_#12233D] hover:shadow-[1px_1px_0px_#12233D] hover:translate-x-[1px] hover:translate-y-[1px] transition-all"
+    >
+      <span>↩</span> Periksa NIM Lain
+    </button>
+  </div>
+
+</div>

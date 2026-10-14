@@ -1,0 +1,63 @@
+---
+// SearchSection.astro
+---
+
+<section id="searchSection" class="w-full max-w-xl mx-auto flex flex-col items-center transition-all duration-300">
+  <!-- Hero Title (Frosted Glass Card untuk Keterbacaan Maksimal) -->
+  <div class="text-center w-full mb-5 sm:mb-7 px-4 sm:px-6 py-5 sm:py-6 bg-white/85 backdrop-blur-md rounded-2xl border-2 border-brand-tan/25 shadow-lg shadow-brand-blue/5">
+    <div class="inline-flex items-center gap-1.5 bg-brand-tan/15 text-brand-tan border border-brand-tan/30 px-2.5 sm:px-3 py-0.5 sm:py-1 rounded-full text-[10px] sm:text-xs font-extrabold uppercase tracking-wider mb-2 sm:mb-2.5">
+      <span>✦</span> Seleksi Calon Panitia <span>✦</span>
+    </div>
+    <h2 class="text-2xl sm:text-3xl md:text-4xl font-black text-brand-navy tracking-tight leading-snug sm:leading-tight">
+      Hasil Seleksi Wawancara <br />
+      <span class="text-brand-blue">Panitia Ekspedisi Biru</span> <span class="text-brand-tan">2026</span>
+    </h2>
+    <p class="mt-2 text-xs sm:text-sm md:text-base text-gray-700 font-semibold max-w-md mx-auto leading-relaxed">
+      Periksa hasil seleksi wawancara Anda sebagai calon panitia Ekspedisi Biru 2026 Kampus UPI di Cibiru.
+    </p>
+  </div>
+
+  <!-- FORM INPUT NIM -->
+  <div class="w-full bg-white rounded-2xl border-2 border-brand-tan/30 shadow-xl shadow-brand-blue/5 p-5 sm:p-6 md:p-8 relative">
+    <div class="absolute -top-3 left-4 sm:left-6 bg-brand-tan text-white text-[10px] sm:text-[11px] font-bold px-2.5 sm:px-3 py-0.5 rounded-md uppercase tracking-wider shadow-sm">
+      Formulir Pencarian
+    </div>
+
+    <form id="nimSearchForm" class="space-y-4" onsubmit="return false;">
+      <div>
+        <label for="nimInput" class="block text-[11px] sm:text-xs font-bold text-brand-navy uppercase tracking-wider mb-2">
+          Nomor Induk Mahasiswa (NIM)
+        </label>
+        <div class="relative">
+          <span class="absolute inset-y-0 left-0 flex items-center pl-3.5 sm:pl-4 text-brand-tan font-bold text-base sm:text-lg select-none">
+            #
+          </span>
+          <input
+            type="text"
+            id="nimInput"
+            name="nim"
+            maxlength="15"
+            inputmode="numeric"
+            placeholder="Masukkan Nomor Induk Mahasiswa (NIM)..."
+            class="w-full pl-9 sm:pl-10 pr-4 py-3 sm:py-3.5 bg-brand-cream/60 border-2 border-brand-tan/40 rounded-xl text-brand-navy font-bold text-sm sm:text-base placeholder-gray-400 focus:outline-none focus:border-brand-blue focus:bg-white focus:ring-4 focus:ring-brand-blue/10 transition"
+            autocomplete="off"
+          />
+        </div>
+        <p id="inputErrorMsg" class="hidden mt-2 text-xs font-bold text-red-600 flex items-center gap-1">
+          <svg class="w-3.5 h-3.5 fill-current shrink-0" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+          </svg>
+          <span id="errorText">Silakan masukkan NIM Anda terlebih dahulu.</span>
+        </p>
+      </div>
+
+      <button
+        type="button"
+        id="btnCheckNIM"
+        class="w-full cursor-pointer bg-brand-yellow hover:bg-[#FAD83D] active:bg-[#ECC622] text-brand-navy font-extrabold py-3 sm:py-3.5 px-5 sm:px-6 rounded-xl border-2 border-brand-navy shadow-[3px_3px_0px_#12233D] sm:shadow-[4px_4px_0px_#12233D] hover:shadow-[1px_1px_0px_#12233D] hover:translate-x-[2px] hover:translate-y-[2px] active:shadow-none active:translate-x-[3px] active:translate-y-[3px] transition-all flex items-center justify-center gap-2 text-xs sm:text-sm uppercase tracking-wider"
+      >
+        <span class="text-sm sm:text-base"></span> Periksa Hasil Seleksi
+      </button>
+    </form>
+  </div>
+</section>

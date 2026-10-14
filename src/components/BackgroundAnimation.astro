@@ -1,0 +1,264 @@
+---
+// BackgroundAnimation.astro - Animasi Latar Hidup & Dinamis Bertema Pengabdian Pada Masyarakat & Ekspedisi Biru
+---
+
+<div class="fixed inset-0 pointer-events-none overflow-hidden -z-10 select-none bg-brand-cream" aria-hidden="true">
+  
+  <!-- 1. Aurora Mesh Glowing Lights (Lembut, Hangat & Tidak Menyilaukan) -->
+  <div class="absolute -top-40 -left-40 w-[32rem] h-[32rem] rounded-full bg-gradient-to-br from-brand-yellow/15 to-brand-orange/10 blur-[100px] animate-[aurora-drift-1_14s_ease-in-out_infinite_alternate]"></div>
+  <div class="absolute top-1/4 -right-32 w-[30rem] h-[30rem] rounded-full bg-gradient-to-bl from-brand-blue/10 to-brand-green/10 blur-[110px] animate-[aurora-drift-2_18s_ease-in-out_infinite_alternate]"></div>
+  <div class="absolute -bottom-40 left-1/3 w-[36rem] h-[36rem] rounded-full bg-gradient-to-tr from-brand-orange/10 to-brand-yellow/15 blur-[120px] animate-[aurora-drift-3_16s_ease-in-out_infinite_alternate]"></div>
+  <div class="absolute top-2/3 -left-32 w-[28rem] h-[28rem] rounded-full bg-gradient-to-r from-brand-green/10 to-brand-blue/10 blur-[105px] animate-[aurora-drift-1_20s_ease-in-out_infinite_alternate]"></div>
+
+  <!-- 2. Interactive 60FPS Canvas (Simbol Pengabdian & Partikel Air/Udara Mengalir) -->
+  <canvas id="expeditionCanvas" class="absolute inset-0 w-full h-full"></canvas>
+
+  <!-- 3. Pelindung Keterbacaan Tengah (Radial Readability Shield): Menjaga Teks Tetap Tajam & Kontras Tinggi -->
+  <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(250,245,236,0.94)_0%,rgba(250,245,236,0.65)_55%,rgba(250,245,236,0.2)_100%)]"></div>
+
+</div>
+
+<script>
+  // Inisialisasi Canvas Animasi Pengabdian Masyarakat & Ekspedisi Biru
+  const canvas = document.getElementById('expeditionCanvas') as HTMLCanvasElement | null;
+  if (canvas) {
+    const ctx = canvas.getContext('2d');
+    if (ctx) {
+      let width = (canvas.width = window.innerWidth);
+      let height = (canvas.height = window.innerHeight);
+
+      // SVG Path Strings untuk Ikon Pengabdian Masyarakat (Grid 24x24 dinormalisasi ke pusat 0,0)
+      const iconPathDefs = [
+        // 1. Tunas Harapan & Bina Desa (Sprout)
+        'M 0 -9 C -4 -9 -7 -5 -7 -1 C -7 3 -3 6 0 8 C 3 6 7 3 7 -1 C 7 -5 4 -9 0 -9 Z M 0 8 L 0 10 M -4 0 C -2 -4 2 -4 4 0',
+        // 2. Edukasi & Buku Terbuka (Open Book)
+        'M -8 -6 L -2 -4 L -2 7 L -8 5 Z M 8 -6 L 2 -4 L 2 7 L 8 5 Z M -2 -4 L 0 -5 L 2 -4 L 2 7 L 0 6 L -2 7 Z',
+        // 3. Kompas Ekspedisi Biru (Compass Rose)
+        'M 0 -9 L 2.5 -2.5 L 9 0 L 2.5 2.5 L 0 9 L -2.5 2.5 L -9 0 L -2.5 -2.5 Z M 0 -4 L 1.5 -1.5 L 4 0 L 1.5 1.5 L 0 4 L -1.5 1.5 L -4 0 L -1.5 -1.5 Z',
+        // 4. Bakti Kasih / Hati Peduli (Heart of Service)
+        'M 0 7 L -1.2 5.9 C -5.2 2.3 -7.5 -0.1 -7.5 -2.9 C -7.5 -5.2 -5.5 -7 -3.1 -7 C -1.8 -7 -0.6 -6.4 0 -5.3 C 0.6 -6.4 1.8 -7 3.1 -7 C 5.5 -7 7.5 -5.2 7.5 -2.9 C 7.5 -0.1 5.2 2.3 1.2 5.9 Z',
+        // 5. Gotong Royong / Tangan Saling Merangkul (Hands/Fellowship)
+        'M -7 -4 C -7 -6 -5 -7 -3 -7 L 3 -7 C 5 -7 7 -6 7 -4 L 7 1 C 7 3 5 4 3 4 L -3 4 C -5 4 -7 3 -7 1 Z M -4 4 L -4 7 L -1 7 L -1 4 M 4 4 L 4 7 L 1 7 L 1 4',
+        // 6. Tenda Ekspedisi & Bina Warga (Expedition Tent)
+        'M 0 -8 L -8 7 L 8 7 Z M 0 -4 L 4 7 L -4 7 Z',
+        // 7. Bintang Inspirasi / Mentari (Sparkle / Sun of Hope)
+        'M 0 -8 Q 0 0 8 0 Q 0 0 0 8 Q 0 0 -8 0 Q 0 0 0 -8 Z'
+      ];
+
+      // Kompilasi ke Path2D
+      const iconPaths = iconPathDefs.map((def) => new Path2D(def));
+
+      // Palet Warna Khas Ekspedisi Biru
+      const brandColors = [
+        { r: 29, g: 78, b: 158 },   // Biru Utama (Navy Blue)
+        { r: 241, g: 101, b: 39 },  // Oranye Semangat
+        { r: 106, g: 160, b: 58 },  // Hijau Bina Desa
+        { r: 200, g: 145, b: 81 },  // Tan / Emas Tanah Air
+        { r: 255, g: 200, b: 50 },  // Kuning Mentari
+      ];
+
+      // Array Partikel
+      interface Particle {
+        x: number;
+        y: number;
+        vx: number;
+        vy: number;
+        size: number;
+        color: { r: number; g: number; b: number };
+        alpha: number;
+        baseAlpha: number;
+        rotation: number;
+        vRot: number;
+        type: 'icon' | 'firefly' | 'ring';
+        iconIndex: number;
+        swaySpeed: number;
+        swayAmp: number;
+        swayAngle: number;
+      }
+
+      const particles: Particle[] = [];
+      const isMobile = window.innerWidth < 768;
+      const TOTAL_ICONS = isMobile ? 18 : 34;      // Jumlah ikon pengabdian
+      const TOTAL_FIREFLIES = isMobile ? 35 : 60;  // Jumlah kunang-kunang/partikel cahaya
+
+      // Buat Ikon Pengabdian Bergerak Acak & Melayang Bebas
+      for (let i = 0; i < TOTAL_ICONS; i++) {
+        const color = brandColors[Math.floor(Math.random() * brandColors.length)];
+        const speedMultiplier = 0.5 + Math.random() * 0.9;
+        const angle = Math.random() * Math.PI * 2;
+
+        particles.push({
+          x: Math.random() * width,
+          y: Math.random() * height,
+          vx: Math.cos(angle) * speedMultiplier * 0.8,
+          vy: Math.sin(angle) * speedMultiplier * 0.8,
+          size: 16 + Math.random() * (isMobile ? 14 : 22), // Skala dinamis
+          color,
+          alpha: 0.08 + Math.random() * 0.14,
+          baseAlpha: 0.08 + Math.random() * 0.14,
+          rotation: Math.random() * Math.PI * 2,
+          vRot: (Math.random() - 0.5) * 0.02,
+          type: 'icon',
+          iconIndex: Math.floor(Math.random() * iconPaths.length),
+          swaySpeed: 0.01 + Math.random() * 0.03,
+          swayAmp: 1.2 + Math.random() * 2.5,
+          swayAngle: Math.random() * Math.PI * 2
+        });
+      }
+
+      // Buat Kunang-kunang / Partikel Cahaya Ceria
+      for (let i = 0; i < TOTAL_FIREFLIES; i++) {
+        const color = brandColors[Math.floor(Math.random() * brandColors.length)];
+        const speed = 0.4 + Math.random() * 1.2;
+        const angle = Math.random() * Math.PI * 2;
+
+        particles.push({
+          x: Math.random() * width,
+          y: Math.random() * height,
+          vx: Math.cos(angle) * speed,
+          vy: Math.sin(angle) * speed,
+          size: 2.5 + Math.random() * 5.5,
+          color,
+          alpha: 0.12 + Math.random() * 0.2,
+          baseAlpha: 0.12 + Math.random() * 0.2,
+          rotation: 0,
+          vRot: 0,
+          type: Math.random() > 0.3 ? 'firefly' : 'ring',
+          iconIndex: 0,
+          swaySpeed: 0.02 + Math.random() * 0.04,
+          swayAmp: 2 + Math.random() * 4,
+          swayAngle: Math.random() * Math.PI * 2
+        });
+      }
+
+      // Interaksi Mouse & Sentuhan (Mendorong partikel lembut saat didekati kursor)
+      const mouse = { x: -1000, y: -1000, radius: 140 };
+
+      window.addEventListener('mousemove', (e) => {
+        mouse.x = e.clientX;
+        mouse.y = e.clientY;
+      });
+
+      window.addEventListener('touchmove', (e) => {
+        if (e.touches.length > 0) {
+          mouse.x = e.touches[0].clientX;
+          mouse.y = e.touches[0].clientY;
+        }
+      }, { passive: true });
+
+      window.addEventListener('mouseleave', () => {
+        mouse.x = -1000;
+        mouse.y = -1000;
+      });
+
+      // Resize Handler
+      function handleResize() {
+        if (!canvas) return;
+        width = canvas.width = window.innerWidth;
+        height = canvas.height = window.innerHeight;
+      }
+      window.addEventListener('resize', handleResize);
+
+      // Loop Animasi 60 FPS
+      let animFrameId: number;
+      function animate() {
+        if (!ctx) return;
+        ctx.clearRect(0, 0, width, height);
+
+        for (let i = 0; i < particles.length; i++) {
+          const p = particles[i];
+
+          // 1. Pergerakan Acak & Ayunan Organik (Sway Wave)
+          p.swayAngle += p.swaySpeed;
+          const swayX = Math.cos(p.swayAngle) * p.swayAmp;
+          const swayY = Math.sin(p.swayAngle) * p.swayAmp;
+
+          p.x += p.vx + swayX * 0.2;
+          p.y += p.vy + swayY * 0.2;
+          p.rotation += p.vRot;
+
+          // 2. Interaksi Kursor / Sentuhan
+          const dx = p.x - mouse.x;
+          const dy = p.y - mouse.y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+          if (dist < mouse.radius) {
+            const force = (1 - dist / mouse.radius) * 4;
+            p.x += (dx / dist) * force;
+            p.y += (dy / dist) * force;
+          }
+
+          // 3. Batas Layar: Muncul kembali dari sisi berlawanan secara mulus
+          const pad = p.size * 2 + 30;
+          if (p.x < -pad) p.x = width + pad;
+          if (p.x > width + pad) p.x = -pad;
+          if (p.y < -pad) p.y = height + pad;
+          if (p.y > height + pad) p.y = -pad;
+
+          // 4. Efek Kelap-Kelip Lembut (Breathing Alpha)
+          const pulsate = Math.sin(p.swayAngle * 1.5) * 0.05;
+          const currentAlpha = Math.max(0.04, Math.min(0.25, p.baseAlpha + pulsate));
+
+          // 5. Gambar Partikel ke Layar
+          ctx.save();
+          ctx.translate(p.x, p.y);
+
+          if (p.type === 'icon') {
+            ctx.rotate(p.rotation);
+            // Skala kan path ikon
+            const scale = p.size / 20;
+            ctx.scale(scale, scale);
+
+            // Gaya Garis Ikon Pengabdian (Halus & Elegan, tidak mengaburkan teks)
+            ctx.strokeStyle = `rgba(${p.color.r}, ${p.color.g}, ${p.color.b}, ${currentAlpha * 1.2})`;
+            ctx.fillStyle = `rgba(${p.color.r}, ${p.color.g}, ${p.color.b}, ${currentAlpha * 0.2})`;
+            ctx.lineWidth = 1.6;
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
+
+            const path = iconPaths[p.iconIndex];
+            ctx.fill(path);
+            ctx.stroke(path);
+
+          } else if (p.type === 'firefly') {
+            // Kunang-Kunang Berpendar
+            const grad = ctx.createRadialGradient(0, 0, 0, 0, 0, p.size * 2);
+            grad.addColorStop(0, `rgba(${p.color.r}, ${p.color.g}, ${p.color.b}, ${currentAlpha * 1.3})`);
+            grad.addColorStop(0.5, `rgba(${p.color.r}, ${p.color.g}, ${p.color.b}, ${currentAlpha * 0.4})`);
+            grad.addColorStop(1, `rgba(${p.color.r}, ${p.color.g}, ${p.color.b}, 0)`);
+
+            ctx.fillStyle = grad;
+            ctx.beginPath();
+            ctx.arc(0, 0, p.size * 2, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Inti Cahaya Terang
+            ctx.fillStyle = `rgba(255, 255, 255, ${currentAlpha * 0.9})`;
+            ctx.beginPath();
+            ctx.arc(0, 0, p.size * 0.5, 0, Math.PI * 2);
+            ctx.fill();
+
+          } else {
+            // Ring Cincin Energi Halus
+            ctx.strokeStyle = `rgba(${p.color.r}, ${p.color.g}, ${p.color.b}, ${currentAlpha * 0.8})`;
+            ctx.lineWidth = 1.4;
+            ctx.beginPath();
+            ctx.arc(0, 0, p.size, 0, Math.PI * 2);
+            ctx.stroke();
+          }
+
+          ctx.restore();
+        }
+
+        animFrameId = requestAnimationFrame(animate);
+      }
+
+      animate();
+
+      // Cleanup saat navigasi/unmount
+      document.addEventListener('astro:before-swap', () => {
+        cancelAnimationFrame(animFrameId);
+        window.removeEventListener('resize', handleResize);
+      }, { once: true });
+    }
+  }
+</script>

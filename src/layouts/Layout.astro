@@ -1,0 +1,47 @@
+---
+import '../styles/global.css';
+import BackgroundAnimation from '../components/BackgroundAnimation.astro';
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const {
+  title = 'Pengumuman Seleksi Panitia - Ekspedisi Biru 2026',
+  description = 'Periksa status kelulusan seleksi wawancara calon panitia Ekspedisi Biru 2026 Kampus UPI di Cibiru.'
+} = Astro.props;
+---
+
+<!doctype html>
+<html lang="id" class="scroll-smooth">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="generator" content={Astro.generator} />
+
+    <!-- Security Meta Tags -->
+    <meta name="referrer" content="strict-origin-when-cross-origin" />
+    <meta http-equiv="X-Content-Type-Options" content="nosniff" />
+    <meta http-equiv="X-Frame-Options" content="DENY" />
+
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content="website" />
+
+    <!-- Google Fonts: Plus Jakarta Sans -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body class="bg-brand-cream text-brand-navy min-h-screen font-sans flex flex-col selection:bg-brand-yellow selection:text-brand-navy relative">
+    <BackgroundAnimation />
+    <slot />
+  </body>
+</html>

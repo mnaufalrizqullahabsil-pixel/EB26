@@ -1,0 +1,73 @@
+---
+// Navbar.astro - Menampilkan Logo UPI, BEM, Departemen Pengabdian, dan EB (Mobile-first responsive)
+import upiLogo from '../assets/upi.svg';
+import bemLogo from '../assets/bem.svg';
+import pengabdianLogo from '../assets/pengabdian.svg';
+---
+
+<!-- TOP DECORATIVE BAR -->
+<div class="h-1.5 sm:h-2 w-full bg-gradient-to-r from-brand-blue via-brand-tan via-brand-orange to-brand-yellow"></div>
+
+<!-- NAVBAR DENGAN LOGO & STATUS -->
+<header class="w-full bg-white/90 backdrop-blur-md border-b border-brand-tan/20 sticky top-0 z-40 transition-all">
+  <div class="max-w-5xl mx-auto px-3 sm:px-4 py-2 sm:py-2.5 flex items-center justify-between gap-2">
+    
+    <!-- Row Logo Mitra & Kepanitiaan -->
+    <div class="flex items-center gap-1.5 xs:gap-2 sm:gap-3.5 shrink-0">
+      <!-- Logo UPI -->
+      <div class="flex items-center" title="Universitas Pendidikan Indonesia">
+        <img
+          src={upiLogo.src}
+          alt="Logo UPI"
+          class="h-7 sm:h-9 w-auto object-contain drop-shadow-xs hover:scale-105 transition-transform"
+          loading="eager"
+        />
+      </div>
+
+      <span class="h-4 sm:h-5 w-px bg-gray-200"></span>
+
+      <!-- Logo BEM -->
+      <div class="flex items-center" title="BEM REMA UPI Cibiru">
+        <img
+          src={bemLogo.src}
+          alt="Logo BEM"
+          class="h-7 sm:h-9 w-auto object-contain drop-shadow-xs hover:scale-105 transition-transform"
+          loading="eager"
+        />
+      </div>
+
+      <span class="h-4 sm:h-5 w-px bg-gray-200"></span>
+
+      <!-- Logo Departemen Pengabdian -->
+      <div class="flex items-center" title="Departemen Pengabdian Masyarakat">
+        <img
+          src={pengabdianLogo.src}
+          alt="Logo Pengabdian"
+          class="h-7 sm:h-9 w-auto object-contain drop-shadow-xs hover:scale-105 transition-transform"
+          loading="eager"
+        />
+      </div>
+
+      <span class="h-4 sm:h-5 w-px bg-gray-200"></span>
+
+      <!-- Logo Ekspedisi Biru (Emblem Badge) -->
+      <div class="flex items-center" title="Ekspedisi Biru 2026">
+        <div class="w-7 h-7 sm:w-9 sm:h-9 rounded-full bg-gradient-to-tr from-brand-blue to-brand-blueDark border-2 border-brand-yellow text-brand-yellow flex items-center justify-center text-[10px] sm:text-xs font-black shadow-sm ring-2 ring-blue-100/50 hover:scale-105 transition-transform">
+          EB
+        </div>
+      </div>
+    </div>
+
+    <!-- Status Badge (Responsive label on mobile) -->
+    <div class="flex items-center gap-1.5 sm:gap-2 bg-brand-yellow/25 border border-brand-yellow/70 px-2 sm:px-3 py-1 rounded-full shadow-xs shrink-0">
+      <span class="relative flex h-2 w-2 shrink-0">
+        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-brand-green opacity-75"></span>
+        <span class="relative inline-flex rounded-full h-2 w-2 bg-brand-green"></span>
+      </span>
+      <span class="text-[10px] sm:text-xs font-bold text-brand-navy tracking-tight whitespace-nowrap">
+        <span class="hidden sm:inline">Pengumuman </span>Terbuka
+      </span>
+    </div>
+
+  </div>
+</header>
