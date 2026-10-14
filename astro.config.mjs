@@ -14,6 +14,7 @@ const securityHeaders = {
 // https://astro.build/config
 export default defineConfig({
   vite: {
+    envPrefix: ['PUBLIC_', 'SUPABASE_', 'NEXT_PUBLIC_'],
     plugins: [tailwindcss()],
     server: {
       headers: securityHeaders
