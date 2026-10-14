@@ -1,29 +1,11 @@
 import { createClient } from '@supabase/supabase-js';
 
-const OFFICIAL_SUPABASE_URL = 'https://dlzfugiolifzdxqnnatp.supabase.co';
-const OFFICIAL_SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRsemZ1Z2lvbGlmemR4cW5uYXRwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE4MTgzMzksImV4cCI6MjEwNzM5NDMzOX0.MlSV8ujsyWCM1cngOVVhNVoeAs9KvG-Rf5V66RAwxN0';
-
-function getValidConfig(val: unknown, placeholder: string, fallback: string): string {
-  if (typeof val === 'string' && val.trim() !== '' && !val.includes(placeholder)) {
-    return val.trim();
-  }
-  return fallback;
-}
-
-const supabaseUrl = getValidConfig(
-  import.meta.env.PUBLIC_SUPABASE_URL || import.meta.env.SUPABASE_URL || import.meta.env.NEXT_PUBLIC_SUPABASE_URL,
-  'your-project-id',
-  OFFICIAL_SUPABASE_URL
-);
-
-const supabaseAnonKey = getValidConfig(
-  import.meta.env.PUBLIC_SUPABASE_ANON_KEY || import.meta.env.SUPABASE_ANON_KEY || import.meta.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
-  'your-anon-key',
-  OFFICIAL_SUPABASE_ANON_KEY
-);
+// Hardcoded Supabase Credentials (tidak bergantung pada file .env)
+export const SUPABASE_URL = 'https://dlzfugiolifzdxqnnatp.supabase.co';
+export const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRsemZ1Z2lvbGlmemR4cW5uYXRwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE4MTgzMzksImV4cCI6MjEwNzM5NDMzOX0.MlSV8ujsyWCM1cngOVVhNVoeAs9KvG-Rf5V66RAwxN0';
 
 export const isSupabaseConfigured = true;
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 export interface PesertaResult {
   nim: string;
